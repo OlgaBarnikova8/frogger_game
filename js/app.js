@@ -1,4 +1,3 @@
-
 const enemyStart = -100;
 const enemyEnd = 65;
 const enemySpeed = 100;
@@ -6,11 +5,20 @@ const fieldEnd = 500;
 
 const playerX = 200;
 const playerY = 320;
-const playerWidth = 400;
-const playerHeight = 500;
+const fieldPlayerWidth = 400;
+const fieldPlayerHeight = 500;
+const playerWidth = 80;
+const playerHeight = 50;
 const Step = 95;
 const canvasWidth = 600;
 const canvasHeight = 600;
+
+let score = 0;
+let collisionsCount = 0;
+
+/*const collisions = new Image();
+collisions.src = 'images/Gem Orange.png';
+ctx.drawImage(collisions, 50, 50);*/
 
 let Enemy = function(x, y, width, height, player, speed) {    
     this.x = x;
@@ -27,19 +35,13 @@ Enemy.prototype.update = function(dt) {
     if (this.x > fieldEnd) {
         this.x = enemyStart;
     }   
-    
-    /*if (this.player.x < this.x + this.player.width && this.player.x + this.player.width &&
-        this.player.y < this.y + this.player.height && this.player.height && this.player.height + this.player.y > this.y) {
-        this.player.x = playerX;
-        this.player.y = playerY;        
-    }    */
-    /*if (this.x < this.player.x + this.player.width ||
-        this.x + this.width > this.player.x ||
-        this.y < this.player.y + this.player.height ||
-        this.y + this.height > this.player.y) {
-        this.player.x = playerX;
-        this.player.y = playerY; 
-    }*/    
+    //collisions
+    if (player.x < this.x + playerWidth && player.x + playerWidth > this.x &&
+        player.y < this.y + playerHeight && playerHeight + player.y > this.y) {
+        collisionsCount++;
+        player.x = playerX;
+        player.y = playerY;
+  };     
 };
 
 Enemy.prototype.render = function() {
@@ -55,15 +57,23 @@ const Player = function(x, y, width, height) {
 };
 
 Player.prototype.update = function() {
-    if (this.x > playerWidth || this.x < 0 ||
-        this.y > playerHeight || this.y < 0) {
+    if (this.x > fieldPlayerWidth || this.x < 0 ||
+        this.y > fieldPlayerHeight || this.y < 0) {
         this.x = playerX;
         this.y = playerY;
+        score++;
     }   
 };
 
 Player.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y); 
+    //score
+    ctx.fillStyle = 'blue';
+    ctx.strokeStyle = 'blue';
+    ctx.font = '15px Verdana';
+    ctx.strokeText('Score: ' + score, 110, 35);       
+    ctx.font = '15px Verdana';
+    ctx.strokeText('Collisions: ' + collisionsCount, 210, 35);    
 };
 
 Player.prototype.handleInput = function(keyPress) {
@@ -81,25 +91,17 @@ Player.prototype.handleInput = function(keyPress) {
     }
 };
 
-const player = new Player(playerX, playerY, playerWidth, playerHeight);
+const player = new Player(playerX, playerY, fieldPlayerWidth, fieldPlayerHeight);
 const allEnemies = [];
 function initEnemies() {    
-        allEnemies.push(new Enemy(enemyStart, enemyEnd, canvasWidth, canvasHeight, player, enemySpeed));   
-        allEnemies.push(new Enemy(enemyStart, enemyEnd + 85, canvasWidth, canvasHeight, player, enemySpeed-20));  
-        allEnemies.push(new Enemy(enemyStart, enemyEnd + 170, canvasWidth, canvasHeight, player, enemySpeed+20));  
+        allEnemies.push(new Enemy(enemyStart, enemyEnd, canvasWidth, canvasHeight, player, enemySpeed*2));   
+        allEnemies.push(new Enemy(enemyStart, enemyEnd + 85, canvasWidth, canvasHeight, player, enemySpeed*1.7));  
+        allEnemies.push(new Enemy(enemyStart, enemyEnd + 170, canvasWidth, canvasHeight, player, enemySpeed*1.5));  
 }
-initEnemies()
+initEnemies();
 
-/*function collision(first, second){
-    return !(first.x > second.x + second.width ||
-             first.x + first.width < second.x ||
-             first.y > second.y + second.height ||
-             first.y + first.height < second.y);
-} */
-/*if (collision(Enemy,player)) {
-    console.log(player.x)      
-}*/
 //https://www.youtube.com/watch?v=GXvNEwu9cgM&t=6s&ab_channel=Frankslaboratory
+
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
         37: 'left',
